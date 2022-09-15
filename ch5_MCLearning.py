@@ -1,22 +1,30 @@
+## (david-laugh)
+## Code Review for Study
+
+
 import random
-import numpy as np
+## (MY) 사용하지 않은 라이브러리
+# import numpy as np
+
 
 class GridWorld():
     def __init__(self):
-        self.x=0
-        self.y=0
-    
+        self.x = 0
+        self.y = 0
+
+    ## (MY) agent의 step 설정
     def step(self, a):
         # 0번 액션: 왼쪽, 1번 액션: 위, 2번 액션: 오른쪽, 3번 액션: 아래쪽
-        if a==0:
+        if a == 0:
             self.move_left()
-        elif a==1:
+        elif a == 1:
             self.move_up()
-        elif a==2:
+        elif a == 2:
             self.move_right()
-        elif a==3:
+        elif a == 3:
             self.move_down()
 
+        ## (My) 움직임이 최대한 적은 최적의 보상을 선택하기 위함.
         reward = -1 # 보상은 항상 -1로 고정
         done = self.is_done()
         return (self.x, self.y), reward, done
@@ -25,17 +33,17 @@ class GridWorld():
         self.y += 1  
         if self.y > 3:
             self.y = 3
-      
+
     def move_left(self):
         self.y -= 1
         if self.y < 0:
             self.y = 0
-      
+
     def move_up(self):
         self.x -= 1
         if self.x < 0:
             self.x = 0
-  
+
     def move_down(self):
         self.x += 1
         if self.x > 3:
@@ -47,9 +55,10 @@ class GridWorld():
         else :
             return False
 
+    ## (MY) 현재 agent 위치(상태) 파악.
     def get_state(self):
         return (self.x, self.y)
-      
+
     def reset(self):
         self.x = 0
         self.y = 0
@@ -57,8 +66,9 @@ class GridWorld():
 
 class Agent():
     def __init__(self):
-        pass        
+        pass
 
+    ## (MY) 랜덤하게 action 선택.
     def select_action(self):
         coin = random.random()
         if coin < 0.25:
@@ -75,7 +85,12 @@ class Agent():
 def main():
     env = GridWorld()
     agent = Agent()
-    data = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    data = [
+        [ 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0 ]
+    ]
     gamma = 1.0
     reward = -1
     alpha = 0.001
@@ -87,17 +102,18 @@ def main():
         while not done:
             action = agent.select_action()
             (x,y), reward, done = env.step(action)
-            history.append((x,y,reward))
+            history.append((x, y, reward))
         env.reset()
 
         cum_reward = 0
         for transition in history[::-1]:
             x, y, reward = transition
-            data[x][y] = data[x][y] + alpha*(cum_reward-data[x][y])
-            cum_reward = reward + gamma*cum_reward  # 책에 오타가 있어 수정하였습니다
+            data[x][y] = data[x][y] + alpha * (cum_reward - data[x][y])
+            cum_reward = reward + gamma * cum_reward  # 책에 오타가 있어 수정하였습니다
             
     for row in data:
         print(row)
+
 
 if __name__ == '__main__':
     main()
